@@ -1,7 +1,7 @@
-SRCS = ft_printf.c ft_printf_utils.c 
+SRCS = pipex.c 
 
 OBJS = ${SRCS:.c=.o}
-NAME = libftprintf.a
+NAME = pipex
 LIBC = ar rcs
 CC = cc
 RM = rm -f
