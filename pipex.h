@@ -13,10 +13,10 @@
 #ifndef pipex_H
 # define pipex_H
 
-#include <unistd.h>
-#include <fcntl.h> 
-#include <stdlib.h>  
-#include <stdio.h> 
-#include <string.h>
- 
+# include <fcntl.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <unistd.h>
+
 #endif

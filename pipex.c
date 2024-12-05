@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:37 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/04 12:57:41 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/05 15:31:07 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ void fork_process(int input_fd, int output_fd, int pipefd[2], char *cmd, char **
         close(output_fd);
         close(pipefd[0]);
         close(pipefd[1]); 
-
-        // Execute the command
+        
+        
         char *args[] = {cmd, NULL};
         if (execve(cmd, args, envp) == -1)
         {
@@ -88,6 +88,46 @@ void fork_process(int input_fd, int output_fd, int pipefd[2], char *cmd, char **
             exit(1);
         }
     }
+}
+
+void handle_parent_process(int fd1, int fd2, int pipefd[2])
+{
+    close(fd1);
+    close(fd2);
+    close(pipefd[0]);
+    close(pipefd[1]);
+    int status;
+    pid_t pid;
+    int i = 0;
+    while (i < 2)
+    {
+        pid = wait(&status);
+        if (pid == -1)
+        {
+            perror("wait failed");
+            exit(1);
+        }
+        if (WIFEXITED(status))
+        {
+            int  exit_status = WEXITSTATUS(status);
+            printf("Child process with PID %d exited with status %d\n", pid, exit_status);
+        }
+        else
+            printf("Child process with PID %d did not exit normally\n", pid);
+        i++;
+    }
+    
+}
+
+void cleanup_and_exit(int fd1, int fd2, int pipefd[2], int status)
+{
+    close(fd1);
+    close(fd2);
+    close(pipefd[0]);
+    close(pipefd[1]);
+
+    // Exit with the appropriate status
+    exit(status);
 }
 int main (int ac, char **av, char **envp)
 {
@@ -106,5 +146,7 @@ int main (int ac, char **av, char **envp)
     create_a_pipe(pipefd);
    fork_process(fd1, -1, pipefd, av[2], envp, 1);
    fork_process(-1, fd2, pipefd, av[3], envp, 0);
-    return(0);
+   handle_parent_process(fd1, fd2, pipefd);
+   cleanup_and_exit(fd1, fd2, pipefd, 0);
+   return(0);
 }
