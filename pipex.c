@@ -6,12 +6,11 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:37 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/06 16:45:16 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/06 19:27:20 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include "libft.h"
 #include "pipex.h"
 
 char	**parse_and_validate_command(char *cmd)

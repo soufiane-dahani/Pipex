@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:40 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/06 16:52:47 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/06 19:26:09 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define PIPEX_H
 
 # include "ft_printf.h"
-# include "libft.h"
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -45,8 +44,7 @@ void		fork_process(t_fork_args *args);
 void		handle_parent_process(int fd1, int fd2, int pipefd[2]);
 void		close_parent_fds(int fd1, int fd2, int pipefd[2]);
 void		wait_for_children(int num_children);
-void		handle_child_exit_status(pid_t pid, int status);
 char		**parse_and_validate_command(char *cmd);
 void		cleanup_and_execute(t_fork_args *args, char **cmd_args);
-
+char		**ft_split(char const *s, char c);
 #endif

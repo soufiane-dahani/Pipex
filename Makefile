@@ -1,4 +1,4 @@
-SRCS = pipex.c ft_split.c pipex_utils.c pipex_utils2.c pipex_utils3.c \
+SRCS = pipex.c ft_split.c pipex_utils.c pipex_utils2.c \
 	ft_printf.c ft_printf_utils.c
 
 OBJS = ${SRCS:.c=.o}

@@ -6,12 +6,11 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 11:53:02 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/06 12:46:55 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/06 19:26:58 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include "libft.h"
 #include "pipex.h"
 
 int	open_file(const char *s, int p)

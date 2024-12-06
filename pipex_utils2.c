@@ -6,12 +6,11 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 12:49:15 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/06 17:18:51 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/06 19:30:22 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include "libft.h"
 #include "pipex.h"
 
 void	setup_redirections(t_fork_args *args)
@@ -30,19 +29,12 @@ void	close_parent_fds(int fd1, int fd2, int pipefd[2])
 	close(pipefd[1]);
 }
 
-void	handle_child_exit_status(pid_t pid, int status)
+void	validate_arguments(int argc)
 {
-	int	exit_status;
-
-	if (WIFEXITED(status))
+	if (argc != 5)
 	{
-		exit_status = WEXITSTATUS(status);
-		ft_printf("Child process with PID %d exited with status %d\n", pid,
-			exit_status);
-	}
-	else
-	{
-		ft_printf("Child process with PID %d did not exit normally\n", pid);
+		ft_printf("Usage: ./pipex file1 cmd1 cmd2 file2\n");
+		exit(1);
 	}
 }
 
@@ -61,7 +53,6 @@ void	wait_for_children(int num_children)
 			perror("wait failed");
 			exit(1);
 		}
-		handle_child_exit_status(pid, status);
 		i++;
 	}
 }
