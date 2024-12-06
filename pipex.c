@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:37 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/05 15:31:07 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/06 10:16:45 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,20 @@ void fork_process(int input_fd, int output_fd, int pipefd[2], char *cmd, char **
 
     if (pid == 0)
     {
+        char **args = ft_split(cmd, ' ');
+
+        if (!args || !args[0])
+        {
+            perror("Invalid command");
+            exit(1);
+        }
         if (is_first)
         {
-            
             if (dup2(input_fd, STDIN_FILENO) == -1)
             {
                 perror("dup2 file1 to stdin failed");
                 exit(1);
             }
-
-            
             if (dup2(pipefd[1], STDOUT_FILENO) == -1)
             {
                 perror("dup2 pipe write to stdout failed");
@@ -62,7 +66,6 @@ void fork_process(int input_fd, int output_fd, int pipefd[2], char *cmd, char **
         }
         else
         {
-        
             if (dup2(pipefd[0], STDIN_FILENO) == -1)
             {
                 perror("dup2 pipe read to stdin failed");
@@ -74,21 +77,21 @@ void fork_process(int input_fd, int output_fd, int pipefd[2], char *cmd, char **
                 exit(1);
             }
         }
-
+        
         close(input_fd);
         close(output_fd);
         close(pipefd[0]);
-        close(pipefd[1]); 
-        
-        
-        char *args[] = {cmd, NULL};
-        if (execve(cmd, args, envp) == -1)
+        close(pipefd[1]);
+
+        if (execvp(args[0], args) == -1)
         {
-            perror("execve failed");
+            perror("execvp failed");
+            free(args);
             exit(1);
         }
     }
 }
+
 
 void handle_parent_process(int fd1, int fd2, int pipefd[2])
 {

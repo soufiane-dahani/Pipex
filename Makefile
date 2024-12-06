@@ -1,4 +1,4 @@
-SRCS = pipex.c 
+SRCS = pipex.c ft_split.c
 
 OBJS = ${SRCS:.c=.o}
 NAME = pipex
