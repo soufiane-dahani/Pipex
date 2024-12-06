@@ -1,17 +1,14 @@
-SRCS = pipex.c ft_split.c
+SRCS = pipex.c ft_split.c pipex_utils.c pipex_utils2.c pipex_utils3.c \
+	ft_printf.c ft_printf_utils.c
 
 OBJS = ${SRCS:.c=.o}
 NAME = pipex
-LIBC = ar rcs
 CC = cc
 RM = rm -f
 CFLAGS = -Wall -Wextra -Werror
 
-%.o: %.c
-	${CC} ${CFLAGS} -c $< -o $@
-
 ${NAME}: ${OBJS}
-	${LIBC} ${NAME} ${OBJS}
+	$(CC) $(CFLAGS) ${OBJS} -o ${NAME}
 all: ${NAME}
 
 clean:
