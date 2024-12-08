@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:37 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/06 19:27:20 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/08 11:16:12 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,31 @@ char	**parse_and_validate_command(char *cmd)
 
 void	cleanup_and_execute(t_fork_args *args, char **cmd_args)
 {
+	char	*p;
+	size_t	len;
+
 	close(args->input_fd);
 	close(args->output_fd);
 	close(args->pipefd[0]);
 	close(args->pipefd[1]);
-	if (execvp(cmd_args[0], cmd_args) == -1)
+	len = ft_strlen("/bin/") + ft_strlen(cmd_args[0]) + 1;
+	p = malloc(len + 1);
+	p[0] = '\0';
+	ft_strcat(p, "/bin/");
+	ft_strcat(p, cmd_args[0]);
+	if (!p)
+	{
+		perror("malloc failed");
+		free(cmd_args);
+		exit(1);
+	}
+	if (execve(p, cmd_args, NULL) == -1)
 	{
 		perror("execvp failed");
 		free(cmd_args);
 		exit(1);
 	}
+	free(p);
 }
 
 void	fork_process(t_fork_args *args)

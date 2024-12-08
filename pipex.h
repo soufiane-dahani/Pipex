@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:40 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/06 19:26:09 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/08 11:16:45 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
@@ -47,4 +48,7 @@ void		wait_for_children(int num_children);
 char		**parse_and_validate_command(char *cmd);
 void		cleanup_and_execute(t_fork_args *args, char **cmd_args);
 char		**ft_split(char const *s, char c);
+char		*ft_strcat(char *dest, char *src);
+size_t		ft_strlen(const char *str);
+
 #endif
