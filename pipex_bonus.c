@@ -6,86 +6,127 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:21:27 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/08 16:22:29 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/25 16:24:41 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "pipex_bonus.h"
-# include "ft_printf.h"
-# include "get_next_line.h"
+#include "ft_printf.h"
+#include "pipex_bonus.h"
 
-int initialize_file(char *s, int *fd)
+void	child_process(char *argv, char **envp)
 {
-    int pipefd[2];
-	*fd = open_file(s, O_RDONLY);
-	if (*fd == -1)
-		exit(1);
-	if (pipe(pipefd) == -1)
-	{
-		perror("pipe failed");
-		exit(1);
-	}
-    return(*fd);
-}
-// void	validate_arguments(char **av)
-// {
-//     if (ft_strncmp(av[1] , "here_doc", ft_strlen(av[1])) != 0)
-//     {
-//         if (ft_strncmp(av[1] , ".here_doc", ft_strlen(av[1])) != 0)
-//         {
-//             /* code */
-//         }
-        
-//     }
-    
-// }
+	pid_t	pid;
+	int		fd[2];
 
-int	open_file(const char *s, int p)
-{
-	int	fd;
+	if (pipe(fd) == -1)
+		error();
+	pid = fork();
+	if (pid == -1)
+		error();
+	if (pid == 0)
+	{
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		execute(argv, envp);
+	}
+	else
+	{
+		close(fd[1]);
+		dup2(fd[0], STDIN_FILENO);
+		waitpid(pid, NULL, 0);
+	}
+}
 
-	fd = open(s, p, 0644);
-	if (fd < 0)
-	{
-		perror("error opening file");
-		return (-1);
-	}
-	return (fd);
-}
-void handle_file_morocco(int *fdm, int ac, char **av)
+void	execute(char *argv, char **envp)
 {
-    int i;
-    *fdm = open("morocco", O_RDWR | O_CREAT | O_TRUNC, 0644);
-    if (*fdm < 0)
+	char	**cmd;
+	char	*path;
+	int		i;
+
+	i = -1;
+	cmd = ft_split(argv, ' ');
+	path = find_path(cmd[0], envp);
+	if (!path)
 	{
-		perror("error opening file");
-		exit(1);
+		while (cmd[++i])
+			free(cmd[i]);
+		free(cmd);
+		error();
 	}
-    i = 1;
-    while (i < ac)
-    {
-        write(*fdm, av[i], strlen(av[i])); // change strlen
-        write(*fdm, "\n", 1);
-        i++;
-    }
+	if (execve(path, cmd, envp) == -1)
+		error();
 }
-void handle_line(int *fdm, int *fd)
+
+char	*find_path(char *cmd, char **envp)
 {
-    char *line;
-    fdm = open("morocco", O_RDONLY);
-    while (((line = get_next_line(fdm)) != NULL))
-    {
-        initialize_file(line, fd);
-        free(line);
-    }
+	char	**paths;
+	char	*path;
+	char	*part_path;
+	int		i;
+
+	i = 0;
+	while (ft_strnstr(envp[i], "PATH", 4) == 0)
+		i++;
+	paths = ft_split(envp[i] + 5, ':');
+	i = 0;
+	while (paths[i])
+	{
+		part_path = ft_strjoin(paths[i], "/");
+		path = ft_strjoin(part_path, cmd);
+		free(part_path);
+		if (access(path, F_OK) == 0)
+			return (path);
+		free(path);
+		i++;
+	}
+	i = -1;
+	while (paths[++i])
+		free(paths[i]);
+	free(paths);
+	return (0);
 }
+
+int	open_file(char *argv, int i)
+{
+	int	file;
+
+	file = 0;
+	if (i == 0)
+		file = open(argv, O_WRONLY | O_CREAT | O_APPEND, 0777);
+	else if (i == 1)
+		file = open(argv, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	else if (i == 2)
+		file = open(argv, O_RDONLY, 0777);
+	if (file == -1)
+		error();
+	return (file);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-    int fd;
-    int fdm;
-    handle_file_morocco(&fdm, argc, argv);
-    // initialize_files(argv, &fd1, &fd2, pipefd);
-    // validate_arguments(argv);
-    void handle_line(fdm,fd);    
-    return 0;
+	int	i;
+	int	filein;
+	int	fileout;
+
+	if (argc >= 5)
+	{
+		if (ft_strncmp(argv[1], "here_doc", 8) == 0)
+		{
+			i = 3;
+			fileout = open_file(argv[argc - 1], 0);
+			here_doc(argv[2], argc);
+		}
+		else
+		{
+			i = 2;
+			fileout = open_file(argv[argc - 1], 1);
+			filein = open_file(argv[1], 2);
+			dup2(filein, STDIN_FILENO);
+		}
+		while (i < argc - 2)
+			child_process(argv[i++], envp);
+		dup2(fileout, STDOUT_FILENO);
+		execute(argv[argc - 2], envp);
+	}
+	usage();
 }

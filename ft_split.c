@@ -6,11 +6,13 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 10:17:13 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/06 19:27:40 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/25 15:47:13 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
 #include "pipex.h"
+#include "pipex_bonus.h"
 
 static char	**free_array(char **ptr, int i)
 {
