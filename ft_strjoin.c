@@ -6,10 +6,12 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:51:08 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/25 16:25:22 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/26 13:22:54 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_printf.h"
+#include "pipex.h"
 #include "pipex_bonus.h"
 
 char	*ft_strjoin(char const *s1, char const *s2)
@@ -38,4 +40,42 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	}
 	new[i] = '\0';
 	return (new);
+}
+
+char	*removecharta(char *str, char *c)
+{
+	int		len;
+	char	*result;
+	int		i;
+	int		j;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	result = (char *)malloc(len + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] != c[0])
+		{
+			result[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+size_t	ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i] != '\0')
+		i++;
+	return (i);
 }

@@ -1,7 +1,8 @@
-SRCS = pipex.c ft_split.c pipex_utils.c pipex_utils2.c \
-	ft_printf.c ft_printf_utils.c ft_strcat.c
+SRCS = pipex.c pipex_utils.c ft_printf.c \
+	ft_printf_utils.c ft_split.c  ft_strncmp.c \
+	ft_strnstr.c ft_strjoin.c
 SRCSB = pipex_bonus.c pipex_bonus_utils.c ft_printf.c \
-	ft_printf_utils.c ft_split.c ft_strcat.c ft_strncmp.c \
+	ft_printf_utils.c ft_split.c ft_strncmp.c \
 	ft_strnstr.c ft_strjoin.c
 OBJS = ${SRCS:.c=.o}
 OBJSB = ${SRCSB:.c=.o}

@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:24:58 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/25 15:43:02 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/26 11:31:23 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,6 @@ void	error(void);
 char	**ft_split(char const *s, char c);
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlen(const char *str);
+char	*removecharta(char *str, char *c);
+char	*check_command_in_paths(char *cmd, char **paths);
 #endif

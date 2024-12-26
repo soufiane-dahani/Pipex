@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:22:02 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/25 16:24:59 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/26 12:02:26 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@ void	usage(void)
 	ft_printf("\033[31mError: Bad argument\n\e[0m");
 	ft_printf("Ex: ./pipex <file1> <cmd1> <cmd2> <...> <file2>\n");
 	ft_printf("    ./pipex \"here_doc\" <LIMITER> <cmd> <cmd1> <...> <file>\n");
-	exit(EXIT_SUCCESS);
+	exit(1);
 }
 
 void	error(void)
 {
 	perror("\033[31mError");
-	exit(EXIT_FAILURE);
+	exit(126);
 }
 
 int	get_next_line(char **line)
@@ -81,4 +81,24 @@ void	here_doc(char *limiter, int argc)
 		dup2(fd[0], STDIN_FILENO);
 		wait(NULL);
 	}
+}
+
+char	*check_command_in_paths(char *cmd, char **paths)
+{
+	char	*path;
+	char	*part_path;
+	int		i;
+
+	i = 0;
+	while (paths[i])
+	{
+		part_path = ft_strjoin(paths[i], "/");
+		path = ft_strjoin(part_path, cmd);
+		free(part_path);
+		if (access(path, F_OK) == 0)
+			return (path);
+		free(path);
+		i++;
+	}
+	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:21:27 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/25 16:24:41 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/26 12:12:37 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void	child_process(char *argv, char **envp)
 	{
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
 		execute(argv, envp);
 	}
 	else
@@ -44,14 +45,15 @@ void	execute(char *argv, char **envp)
 	int		i;
 
 	i = -1;
-	cmd = ft_split(argv, ' ');
+	cmd = ft_split(removecharta(argv, "'"), ' ');
 	path = find_path(cmd[0], envp);
 	if (!path)
 	{
 		while (cmd[++i])
 			free(cmd[i]);
 		free(cmd);
-		error();
+		write(2, "error: command not found\n", 25);
+		exit(127);
 	}
 	if (execve(path, cmd, envp) == -1)
 		error();
@@ -61,29 +63,20 @@ char	*find_path(char *cmd, char **envp)
 {
 	char	**paths;
 	char	*path;
-	char	*part_path;
 	int		i;
 
 	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == 0)
+	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
 		i++;
+	if (!envp[i])
+		return (NULL);
 	paths = ft_split(envp[i] + 5, ':');
-	i = 0;
-	while (paths[i])
-	{
-		part_path = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(part_path, cmd);
-		free(part_path);
-		if (access(path, F_OK) == 0)
-			return (path);
-		free(path);
-		i++;
-	}
+	path = check_command_in_paths(cmd, paths);
 	i = -1;
 	while (paths[++i])
 		free(paths[i]);
 	free(paths);
-	return (0);
+	return (path);
 }
 
 int	open_file(char *argv, int i)
