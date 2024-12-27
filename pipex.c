@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:37 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/26 13:11:49 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/27 23:24:21 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,12 @@ void	execute(char *argv, char **envp)
 
 	i = -1;
 	cmd = ft_split(removecharta(argv, "'"), ' ');
+	if (ft_strchr(cmd[0], '/'))
+	{
+		if (access(cmd[0], F_OK | X_OK) == -1)
+			perror("error");
+		execve(cmd[0], cmd, envp);
+	}
 	path = find_path(cmd[0], envp);
 	if (!path)
 	{
@@ -85,11 +91,13 @@ int	open_file(char *argv, int i)
 
 	file = 0;
 	if (i == 0)
-		file = open(argv, O_WRONLY | O_CREAT | O_APPEND, 0777);
+		file = open(argv, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else if (i == 1)
-		file = open(argv, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+		file = open(argv, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else if (i == 2)
-		file = open(argv, O_RDONLY, 0777);
+	{
+		file = open(argv, O_RDONLY, 0644);
+	}
 	if (file == -1)
 		error();
 	return (file);

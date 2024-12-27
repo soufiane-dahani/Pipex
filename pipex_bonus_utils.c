@@ -6,26 +6,12 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:22:02 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/26 12:02:26 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/27 23:45:09 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "pipex_bonus.h"
-
-void	usage(void)
-{
-	ft_printf("\033[31mError: Bad argument\n\e[0m");
-	ft_printf("Ex: ./pipex <file1> <cmd1> <cmd2> <...> <file2>\n");
-	ft_printf("    ./pipex \"here_doc\" <LIMITER> <cmd> <cmd1> <...> <file>\n");
-	exit(1);
-}
-
-void	error(void)
-{
-	perror("\033[31mError");
-	exit(126);
-}
 
 int	get_next_line(char **line)
 {
@@ -35,7 +21,6 @@ int	get_next_line(char **line)
 	char	c;
 
 	i = 0;
-	r = 0;
 	buffer = (char *)malloc(10000);
 	if (!buffer)
 		return (-1);
@@ -47,18 +32,41 @@ int	get_next_line(char **line)
 		i++;
 		r = read(0, &c, 1);
 	}
-	buffer[i] = '\n';
-	buffer[++i] = '\0';
+	buffer[i] = '\0';
 	*line = buffer;
-	free(buffer);
 	return (r);
+}
+
+void	write_to_pipe(int fd[2], char *limiter)
+{
+	char	*line;
+
+	close(fd[0]);
+	while (get_next_line(&line))
+	{
+		if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
+			&& ft_strlen(line) == ft_strlen(limiter))
+		{
+			free(line);
+			exit(EXIT_SUCCESS);
+		}
+		write(fd[1], line, ft_strlen(line));
+		write(fd[1], "\n", 1);
+		free(line);
+	}
+}
+
+void	set_pipe_for_parent(int fd[2])
+{
+	close(fd[1]);
+	dup2(fd[0], STDIN_FILENO);
+	wait(NULL);
 }
 
 void	here_doc(char *limiter, int argc)
 {
 	pid_t	reader;
 	int		fd[2];
-	char	*line;
 
 	if (argc < 6)
 		usage();
@@ -67,19 +75,11 @@ void	here_doc(char *limiter, int argc)
 	reader = fork();
 	if (reader == 0)
 	{
-		close(fd[0]);
-		while (get_next_line(&line))
-		{
-			if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0)
-				exit(EXIT_SUCCESS);
-			write(fd[1], line, ft_strlen(line));
-		}
+		write_to_pipe(fd, limiter);
 	}
 	else
 	{
-		close(fd[1]);
-		dup2(fd[0], STDIN_FILENO);
-		wait(NULL);
+		set_pipe_for_parent(fd);
 	}
 }
 
