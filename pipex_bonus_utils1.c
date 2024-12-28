@@ -1,31 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncmp.c                                       :+:      :+:    :+:   */
+/*   pipex_bonus_utils1.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/23 10:51:54 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/28 11:01:03 by sodahani         ###   ########.fr       */
+/*   Created: 2024/12/28 10:15:00 by sodahani          #+#    #+#             */
+/*   Updated: 2024/12/28 11:01:55 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include "pipex.h"
 #include "pipex_bonus.h"
 
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
+void	usage(void)
 {
-	size_t	i;
+	ft_printf("Error: Bad argument");
+	ft_printf("Ex: ./pipex <file1> <cmd1> <cmd2> <...> <file2>\n");
+	ft_printf("    ./pipex \"here_doc\" <LIMITER> <cmd> <cmd1> <...> <file>\n");
+	exit(1);
+}
 
-	i = 0;
-	if (n == 0)
-		return (0);
-	while ((i < n) && (s1[i] || s2[i]))
-	{
-		if (s1[i] != s2[i])
-			return (((unsigned char)s1[i] - (unsigned char)s2[i]));
-		i++;
-	}
-	return (0);
+void	error(void)
+{
+	perror("Error");
+	exit(126);
 }

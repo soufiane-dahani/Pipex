@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 20:52:50 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/27 23:45:55 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/28 11:14:11 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,4 @@ char	*ft_strchr(const char *s, int c)
 	if (*s == (char)c)
 		return ((char *)s);
 	return (0);
-}
-
-void	usage(void)
-{
-	ft_printf("Error: Bad argument");
-	ft_printf("Ex: ./pipex <file1> <cmd1> <cmd2> <...> <file2>\n");
-	ft_printf("    ./pipex \"here_doc\" <LIMITER> <cmd> <cmd1> <...> <file>\n");
-	exit(1);
-}
-
-void	error(void)
-{
-	perror("Error");
-	exit(126);
 }
