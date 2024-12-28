@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:21:27 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/28 19:53:22 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/28 22:10:36 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,11 +92,10 @@ int	main(int argc, char **argv, char **envp)
 {
 	if (argc >= 5)
 	{
-		if (ft_strncmp(argv[1], "here_doc", 8) == 0)
+		if (ft_strncmp(argv[1], "here_doc", 8) == 0 && argc > 5)
 			process_here_doc(argc, argv, envp);
-		else
+		else if (ft_strncmp(argv[1], "here_doc", 8) != 0)
 			process_regular_files(argc, argv, envp);
-		return (0);
 	}
 	usage();
 	return (1);

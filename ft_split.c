@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 10:17:13 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/28 11:12:47 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/28 21:56:13 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,13 +94,26 @@ char	**ft_split(char const *s, char c)
 {
 	char			**s2;
 	unsigned int	num_words;
+	int				i;
 
-	if (!s)
-		return (0);
+	i = -1;
+	if (!(*s))
+	{
+		free((char *)s);
+		write(2, "error: permission denied\n", 25);
+		exit(0);
+	}
 	num_words = ft_count_words(s, c);
 	s2 = (char **)malloc(sizeof(char *) * (num_words + 1));
 	if (!s2)
 		return (0);
 	s2 = ft_split_words(s, c, s2, num_words);
+	if (!(*s2))
+	{
+		free_array(s2, num_words);
+		free((char *)s);
+		write(2, "error: command not found\n", 25);
+		exit(0);
+	}
 	return (s2);
 }
