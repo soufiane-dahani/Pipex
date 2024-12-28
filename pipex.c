@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:03:37 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/28 11:12:58 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/28 19:38:37 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	child_process(char *argv, char **envp)
 	{
 		close(fd[1]);
 		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
 		waitpid(pid, NULL, 0);
 	}
 }
@@ -45,7 +46,9 @@ void	execute(char *argv, char **envp)
 	int		i;
 
 	i = -1;
-	cmd = ft_split(removecharta(argv, "'"), ' ');
+	path = removecharta(argv, "'");
+	cmd = ft_split(path, ' ');
+	free(path);
 	if (ft_strchr(cmd[0], '/'))
 	{
 		if (access(cmd[0], F_OK | X_OK) == -1)
@@ -115,9 +118,11 @@ int	main(int argc, char **argv, char **envp)
 		fileout = open_file(argv[argc - 1], 1);
 		filein = open_file(argv[1], 2);
 		dup2(filein, STDIN_FILENO);
+		close(filein);
 		while (i < argc - 2)
 			child_process(argv[i++], envp);
 		dup2(fileout, STDOUT_FILENO);
+		close(fileout);
 		execute(argv[argc - 2], envp);
 	}
 	usage();

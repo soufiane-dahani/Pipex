@@ -6,7 +6,7 @@
 /*   By: sodahani <sodahani@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:21:27 by sodahani          #+#    #+#             */
-/*   Updated: 2024/12/27 23:28:34 by sodahani         ###   ########.fr       */
+/*   Updated: 2024/12/28 19:53:22 by sodahani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,55 +34,9 @@ void	child_process(char *argv, char **envp)
 	{
 		close(fd[1]);
 		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
 		waitpid(pid, NULL, 0);
 	}
-}
-
-void	execute(char *argv, char **envp)
-{
-	char	**cmd;
-	char	*path;
-	int		i;
-
-	i = -1;
-	cmd = ft_split(removecharta(argv, "'"), ' ');
-	if (ft_strchr(cmd[0], '/'))
-	{
-		if (access(cmd[0], F_OK | X_OK) == -1)
-			perror("error");
-		execve(cmd[0], cmd, envp);
-	}
-	path = find_path(cmd[0], envp);
-	if (!path)
-	{
-		while (cmd[++i])
-			free(cmd[i]);
-		free(cmd);
-		write(2, "error: command not found\n", 25);
-		exit(127);
-	}
-	if (execve(path, cmd, envp) == -1)
-		error();
-}
-
-char	*find_path(char *cmd, char **envp)
-{
-	char	**paths;
-	char	*path;
-	int		i;
-
-	i = 0;
-	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
-		i++;
-	if (!envp[i])
-		return (NULL);
-	paths = ft_split(envp[i] + 5, ':');
-	path = check_command_in_paths(cmd, paths);
-	i = -1;
-	while (paths[++i])
-		free(paths[i]);
-	free(paths);
-	return (path);
 }
 
 int	open_file(char *argv, int i)
@@ -101,31 +55,49 @@ int	open_file(char *argv, int i)
 	return (file);
 }
 
-int	main(int argc, char **argv, char **envp)
+static void	process_here_doc(int argc, char **argv, char **envp)
+{
+	int	i;
+	int	fileout;
+
+	i = 3;
+	fileout = open_file(argv[argc - 1], 0);
+	here_doc(argv[2], argc);
+	while (i < argc - 2)
+		child_process(argv[i++], envp);
+	dup2(fileout, STDOUT_FILENO);
+	close(fileout);
+	execute(argv[argc - 2], envp);
+}
+
+static void	process_regular_files(int argc, char **argv, char **envp)
 {
 	int	i;
 	int	filein;
 	int	fileout;
 
+	i = 2;
+	filein = open_file(argv[1], 2);
+	fileout = open_file(argv[argc - 1], 1);
+	dup2(filein, STDIN_FILENO);
+	close(filein);
+	while (i < argc - 2)
+		child_process(argv[i++], envp);
+	dup2(fileout, STDOUT_FILENO);
+	close(fileout);
+	execute(argv[argc - 2], envp);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
 	if (argc >= 5)
 	{
 		if (ft_strncmp(argv[1], "here_doc", 8) == 0)
-		{
-			i = 3;
-			fileout = open_file(argv[argc - 1], 0);
-			here_doc(argv[2], argc);
-		}
+			process_here_doc(argc, argv, envp);
 		else
-		{
-			i = 2;
-			fileout = open_file(argv[argc - 1], 1);
-			filein = open_file(argv[1], 2);
-			dup2(filein, STDIN_FILENO);
-		}
-		while (i < argc - 2)
-			child_process(argv[i++], envp);
-		dup2(fileout, STDOUT_FILENO);
-		execute(argv[argc - 2], envp);
+			process_regular_files(argc, argv, envp);
+		return (0);
 	}
 	usage();
+	return (1);
 }
